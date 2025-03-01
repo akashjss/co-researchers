@@ -196,31 +196,22 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 For questions and support, please open an issue or contact [your contact info].
 
-## �� Documentation
+## Documentation Sources
 
-The MLX T2V Researcher uses a local documentation store for efficient and accurate model conversion:
+The MLX T2V Researcher uses multiple documentation sources:
 
-### Documentation Structure
-- `mlx_t2v_researcher/docs/mlx/`: MLX framework documentation
-  - `core/`: Core concepts and features
-  - `examples/`: Example implementations
-  - `api/`: API reference
+### Built-in Documentation
+- Local documentation in `mlx_t2v_researcher/docs/`
+- Automatically fetched source code and documentation from:
+  - [MLX](https://github.com/ml-explore/mlx) - Apple's machine learning framework
+  - [whisper.cpp](https://github.com/ggerganov/whisper.cpp) - High-performance Whisper model
 
-- `mlx_t2v_researcher/docs/wan2.1/`: Wan2.1-T2V model documentation
-  - `architecture/`: Model architecture details
-  - `training/`: Training configuration
-  - `inference/`: Inference code and examples
+### Loading Documentation
+Documentation is automatically loaded when initializing the converter. You can also load custom documentation:
 
-### Adding Documentation
-1. Place documentation files in the appropriate directories under `mlx_t2v_researcher/docs/`
-2. Use markdown format (`.md`) for all documentation files
-3. Run the conversion process - documentation will be automatically loaded into the knowledge base
-
-### Custom Documentation Path
-You can specify a custom documentation path when running the converter:
 ```python
-await load_documentation(
-    docs_path=Path("path/to/your/docs"),
-    converter=converter
-)
+from mlx_t2v_researcher.doc_loader import load_documentation
+
+# Load both built-in and custom documentation
+docs = load_documentation(custom_docs_path="path/to/your/docs")
 ``` 

@@ -1,4 +1,5 @@
-import asyncio
+import os
+import subprocess
 from pathlib import Path
 from typing import List, Dict
 from rich.console import Console
@@ -81,6 +82,81 @@ class DocumentationLoader:
             "mlx": format_section(mlx_docs, "MLX"),
             "wan": format_section(wan_docs, "Wan2.1-T2V")
         }
+
+def clone_repos():
+    # Define repositories to clone
+    repos = {
+        'mlx': 'https://github.com/ml-explore/mlx',
+        'Wan2.1': 'https://github.com/Wan-Video/Wan2.1',
+        'mlx-examples': 'https://github.com/ml-explore/mlx-examples'
+    }
+    
+    # Create docs directory if it doesn't exist
+    docs_dir = Path(__file__).parent / 'docs/source_repos'
+    docs_dir.mkdir(parents=True, exist_ok=True)
+    
+    # Clone repositories
+    for repo_name, repo_url in repos.items():
+        repo_path = docs_dir / repo_name
+        if not repo_path.exists():
+            print(f"Cloning {repo_name}...")
+            subprocess.run(['git', 'clone', repo_url, str(repo_path)])
+        else:
+            print(f"Updating {repo_name}...")
+            subprocess.run(['git', 'pull'], cwd=str(repo_path))
+
+def collect_docs():
+    docs_dir = Path(__file__).parent / 'docs/source_repos'
+    content = []
+    
+    # Extensions to look for
+    extensions = {'.md', '.py', '.cpp', '.h', '.hpp'}
+    
+    # Walk through directories
+    for repo_path in docs_dir.iterdir():
+        if repo_path.is_dir():
+            for root, _, files in os.walk(repo_path):
+                for file in files:
+                    if any(file.endswith(ext) for ext in extensions):
+                        file_path = Path(root) / file
+                        with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
+                            try:
+                                content.append({
+                                    'source': str(file_path.relative_to(docs_dir)),
+                                    'content': f.read()
+                                })
+                            except Exception as e:
+                                print(f"Error reading {file_path}: {e}")
+
+    return content
+
+def load_documentation(custom_docs_path=None):
+    """Load documentation from repositories and custom path if provided"""
+    clone_repos()
+    docs = collect_docs()
+    
+    # Add custom documentation if path provided
+    if custom_docs_path:
+        custom_path = Path(custom_docs_path)
+        if custom_path.exists():
+            for root, _, files in os.walk(custom_path):
+                for file in files:
+                    if file.endswith('.md'):
+                        file_path = Path(root) / file
+                        with open(file_path, 'r', encoding='utf-8') as f:
+                            try:
+                                docs.append({
+                                    'source': str(file_path.relative_to(custom_path)),
+                                    'content': f.read()
+                                })
+                            except Exception as e:
+                                print(f"Error reading {file_path}: {e}")
+    
+    return docs
+
+if __name__ == "__main__":
+    docs = load_documentation()
+    print(f"Collected documentation from {len(docs)} files")
 
 async def load_documentation(
     docs_path: Path = None,
