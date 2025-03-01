@@ -6,7 +6,7 @@ from typing import List, Dict, Any
 class InitialResearchAgent:
     def __init__(self):
         self.agent = Agent(
-            model=OpenAIChat(id="gpt-4"),
+            model=OpenAIChat(id="gpt-4o-mini-2024-07-18"),
             description="""You are an initial research agent that performs broad exploration of topics.
             You identify key areas to investigate and create a research framework.""",
             tools=[ExaTools()],
@@ -23,7 +23,7 @@ class InitialResearchAgent:
 class DeepDiveAgent:
     def __init__(self):
         self.agent = Agent(
-            model=OpenAIChat(id="gpt-4"),
+            model=OpenAIChat(id="gpt-4o-mini-2024-07-18"),
             description="""You are a deep-dive research agent that performs detailed investigation 
             into specific aspects of the topic. You focus on finding detailed technical information
             and specialized knowledge.""",
@@ -41,7 +41,7 @@ class DeepDiveAgent:
 class AnalysisAgent:
     def __init__(self):
         self.agent = Agent(
-            model=OpenAIChat(id="gpt-4"),
+            model=OpenAIChat(id="gpt-4o-mini-2024-07-18"),
             description="""You are an analysis agent that evaluates research findings.
             You analyze trends, patterns, and implications of the research.""",
             markdown=True,
@@ -57,7 +57,7 @@ class AnalysisAgent:
 class FactCheckAgent:
     def __init__(self):
         self.agent = Agent(
-            model=OpenAIChat(id="gpt-4"),
+            model=OpenAIChat(id="gpt-4o-mini-2024-07-18"),
             description="""You are a fact-checking agent that verifies claims and findings.
             You look for supporting evidence and identify potential inaccuracies.""",
             tools=[ExaTools()],
@@ -74,7 +74,7 @@ class FactCheckAgent:
 class CriticalReviewAgent:
     def __init__(self):
         self.agent = Agent(
-            model=OpenAIChat(id="gpt-4"),
+            model=OpenAIChat(id="gpt-4o-mini-2024-07-18"),
             description="""You are a critical review agent that challenges assumptions
             and identifies potential biases or limitations in the research.""",
             markdown=True,
@@ -90,7 +90,7 @@ class CriticalReviewAgent:
 class SynthesisAgent:
     def __init__(self):
         self.agent = Agent(
-            model=OpenAIChat(id="gpt-4"),
+            model=OpenAIChat(id="gpt-4o-mini-2024-07-18"),
             description="""You are a synthesis agent that combines and integrates all research findings.
             You create a coherent narrative and identify key insights.""",
             markdown=True,
@@ -106,7 +106,7 @@ class SynthesisAgent:
 class RecommendationAgent:
     def __init__(self):
         self.agent = Agent(
-            model=OpenAIChat(id="gpt-4"),
+            model=OpenAIChat(id="gpt-4o-mini-2024-07-18"),
             description="""You are a recommendation agent that provides actionable insights
             and suggests next steps based on the research findings.""",
             markdown=True,

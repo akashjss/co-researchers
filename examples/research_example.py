@@ -23,14 +23,24 @@ async def main():
     results = await researcher.research(topic, depth="comprehensive")
     
     # Print results in a nicely formatted way
-    console.print("\n[bold green]Initial Research Findings[/bold green]")
-    console.print(Markdown(results["research"]))
+    console.print("\n[bold green]Initial Research Framework[/bold green]")
+    console.print(Markdown(results["framework"]))
     
-    console.print("\n[bold yellow]Fact Check Results[/bold yellow]")
+    console.print("\n[bold cyan]Deep Dive Research[/bold cyan]")
+    console.print(Markdown(results["deep_dive"]))
+    
+    console.print("\n[bold yellow]Analysis & Fact Check[/bold yellow]")
+    console.print(Markdown(results["analysis"]))
     console.print(Markdown(results["fact_check"]))
+    
+    console.print("\n[bold red]Critical Review[/bold red]")
+    console.print(Markdown(results["critique"]))
     
     console.print("\n[bold magenta]Final Synthesis[/bold magenta]")
     console.print(Markdown(results["synthesis"]))
+    
+    console.print("\n[bold green]Recommendations[/bold green]")
+    console.print(Markdown(results["recommendations"]))
 
 if __name__ == "__main__":
     asyncio.run(main()) 
