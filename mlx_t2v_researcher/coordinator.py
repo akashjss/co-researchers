@@ -1,84 +1,66 @@
 from typing import Dict, Any
-from .agents import *
-from .knowledge_base import get_mlx_knowledge_base
+from rich.console import Console
+from dotenv import load_dotenv
+import os
+from .agents import create_base_agent
+
+# Load environment variables
+load_dotenv()
 
 class MLXConverter:
-    def __init__(self, db_url: str = "postgresql+psycopg://ai:ai@localhost:5532/ai"):
-        # Initialize knowledge base
-        self.knowledge_base = get_mlx_knowledge_base(db_url)
+    def __init__(self):
+        self.console = Console()
         
-        # Initialize agents with knowledge base
-        self.architecture_analyzer = ArchitectureAnalysisAgent(self.knowledge_base, db_url)
-        self.mlx_converter = MLXConversionAgent(self.knowledge_base, db_url)
-        self.dependency_analyzer = DependencyAnalysisAgent()
-        self.code_converter = CodeConversionAgent()
-        self.testing_strategist = TestingStrategyAgent()
-        self.optimizer = OptimizationAgent()
-        self.documentor = DocumentationAgent()
-
-    async def load_documentation(self, mlx_docs: str, wan_docs: str):
-        """Load MLX and Wan2.1 documentation into the knowledge base"""
-        # Implementation to load docs into vector store
-        pass
+        # Initialize specialized agents
+        self.architecture_analyzer = create_base_agent(
+            name="Architecture Analyzer",
+            system_prompt="""You are an expert in ML model architectures, specializing in converting models to MLX.
+            Analyze model architectures and identify key components that need conversion."""
+        )
+        
+        self.mlx_converter = create_base_agent(
+            name="MLX Converter",
+            system_prompt="""You are an expert in MLX framework and model conversion.
+            Create detailed plans for converting models to MLX, considering Apple Silicon optimizations."""
+        )
+        
+        self.code_converter = create_base_agent(
+            name="Code Converter",
+            system_prompt="""You are an expert in translating ML model code to MLX.
+            Focus on efficient and optimized implementations for Apple Silicon."""
+        )
 
     async def plan_conversion(self, model_path: str) -> Dict[str, Any]:
-        """
-        Plan and execute the conversion of the model to MLX
-        """
-        # Analyze model architecture
-        architecture_analysis = await self.architecture_analyzer.agent.arun(
-            f"Analyze the architecture of the model at {model_path}. Focus on components that need conversion to MLX."
-        )
+        """Plan and execute the conversion of the model to MLX"""
+        try:
+            self.console.print(f"\n[bold]Starting conversion planning for {model_path}[/bold]")
 
-        # Analyze dependencies
-        dependencies = await self.dependency_analyzer.agent.arun(
-            f"Analyze dependencies needed for converting this model to MLX:\n{architecture_analysis.content}"
-        )
+            # 1. Analyze model architecture
+            self.console.print("\n[cyan]Analyzing model architecture...[/cyan]")
+            arch_response = await self.architecture_analyzer.arun(
+                f"Analyze the architecture of {model_path} for MLX conversion."
+            )
+            architecture_analysis = arch_response.content if hasattr(arch_response, 'content') else str(arch_response)
 
-        # Plan MLX conversion
-        conversion_plan = await self.mlx_converter.agent.arun(f"""
-        Create a detailed conversion plan based on:
-        Architecture: {architecture_analysis.content}
-        Dependencies: {dependencies.content}
-        """)
+            # 2. Plan MLX conversion
+            self.console.print("\n[cyan]Creating MLX conversion plan...[/cyan]")
+            plan_response = await self.mlx_converter.arun(
+                f"Create MLX conversion plan for {model_path}. Analysis: {architecture_analysis[:1000]}"
+            )
+            conversion_plan = plan_response.content if hasattr(plan_response, 'content') else str(plan_response)
 
-        # Generate code conversion strategy
-        code_strategy = await self.code_converter.agent.arun(f"""
-        Create a code conversion strategy based on:
-        Conversion Plan: {conversion_plan.content}
-        Architecture: {architecture_analysis.content}
-        """)
+            # 3. Generate code conversion strategy
+            self.console.print("\n[cyan]Developing code conversion strategy...[/cyan]")
+            code_response = await self.code_converter.arun(
+                f"Create code strategy. Plan: {conversion_plan[:1000]}"
+            )
+            code_strategy = code_response.content if hasattr(code_response, 'content') else str(code_response)
 
-        # Create testing strategy
-        testing_plan = await self.testing_strategist.agent.arun(f"""
-        Design a testing strategy for the converted model:
-        Code Strategy: {code_strategy.content}
-        """)
-
-        # Plan optimizations
-        optimization_plan = await self.optimizer.agent.arun(f"""
-        Create an optimization plan for Apple Silicon:
-        Code Strategy: {code_strategy.content}
-        Testing Plan: {testing_plan.content}
-        """)
-
-        # Generate documentation
-        documentation = await self.documentor.agent.arun(f"""
-        Create comprehensive documentation for the conversion process:
-        Architecture: {architecture_analysis.content}
-        Dependencies: {dependencies.content}
-        Conversion Plan: {conversion_plan.content}
-        Code Strategy: {code_strategy.content}
-        Testing Plan: {testing_plan.content}
-        Optimization Plan: {optimization_plan.content}
-        """)
-
-        return {
-            "architecture_analysis": architecture_analysis.content,
-            "dependencies": dependencies.content,
-            "conversion_plan": conversion_plan.content,
-            "code_strategy": code_strategy.content,
-            "testing_plan": testing_plan.content,
-            "optimization_plan": optimization_plan.content,
-            "documentation": documentation.content
-        } 
+            return {
+                "architecture_analysis": architecture_analysis,
+                "conversion_plan": conversion_plan,
+                "code_strategy": code_strategy
+            }
+        except Exception as e:
+            self.console.print(f"[red]Error during conversion planning: {str(e)}[/red]")
+            raise 

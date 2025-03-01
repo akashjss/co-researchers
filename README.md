@@ -74,7 +74,18 @@ source venv/bin/activate  # On Windows: venv\Scripts\activate
 
 3. Install dependencies:
 ```bash
-pip install -r requirements.txt
+pip install -e .
+```
+
+4. Set up environment variables in `.env`:
+```
+OPENAI_API_KEY=your_openai_key
+EXA_API_KEY=your_exa_key
+```
+
+5. Run the application:
+```bash
+python run_mlx_t2v.py
 ```
 
 ## 📖 Usage
@@ -214,4 +225,28 @@ from mlx_t2v_researcher.doc_loader import load_documentation
 
 # Load both built-in and custom documentation
 docs = load_documentation(custom_docs_path="path/to/your/docs")
+```
+
+## Quick Start
+
+1. Create and activate a virtual environment:
+```bash
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+```
+
+2. Install dependencies:
+```bash
+pip install -e .
+```
+
+3. Set up environment variables in `.env`:
+```
+OPENAI_API_KEY=your_openai_key
+EXA_API_KEY=your_exa_key
+```
+
+4. Run the application:
+```bash
+python run_mlx_t2v.py
 ``` 
